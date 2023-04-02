@@ -1,0 +1,59 @@
+"""
+File: bank.py
+This module defines the Bank class.
+"""
+import pickle
+
+import random
+
+from bank import Bank
+
+from savingsaccount import SavingsAccount
+
+class SavingsAccount:
+    def __init__(self, accountNumber, name, balance):
+        self.accountNumber = accountNumber
+        self.name = name
+        self.balance = balance
+
+    def __str__(self):
+        return f"{self.name}: {self.balance}"
+
+    def get_name(self):
+        return self.name
+
+class Bank:
+    """This class represents a bank as a collection of savnings accounts.
+    An optional file name is also associated
+    with the bank, to allow transfer of accounts to and
+    from permanent file storage."""
+
+    # The state of the bank is a dictionary of accounts and
+    # a file name.  If the file name is None, a file name
+    # for the bank has not yet been established.
+
+    def __init__(self, fileName = None):
+        """Creates a new dictionary to hold the accounts.
+        If a file name is provided, loads the accounts from
+        a file of pickled accounts."""
+        self.accounts = {}
+        self.fileName = fileName
+        if fileName != None:
+            fileObj = open(fileName, 'rb')
+            while True:
+                try:
+                    account = pickle.load(fileObj)
+                    self.add(account)
+                except Exception:
+                    fileObj.close()
+                    break
+
+    def __str__(self):
+        """Returns the string representation of the bank, sorted by name."""
+        accounts_sorted = sorted(self.accounts.values(), key=lambda account: account.get_name())
+        return "\n".join(map(str, accounts_sorted))
+
+    def add(self, account):
+        """Adds an account to the bank."""
+        self.accounts[account.accountNumber] = account
+
